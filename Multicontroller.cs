@@ -25,6 +25,9 @@ namespace TTMulti
 
         int currentGroupIndex = 0;
 
+        /// <summary>
+        /// The index of the group that is currently being controlled, if applicable in the current mode
+        /// </summary>
         internal int CurrentGroupIndex
         {
             get
@@ -40,6 +43,31 @@ namespace TTMulti
             private set
             {
                 currentGroupIndex = value;
+
+                updateControllerBorders();
+            }
+        }
+
+        int _currentPairIndex = 0;
+
+        /// <summary>
+        /// The index of the current pair inside the current group that is being controlled, if applicable in the current mode
+        /// </summary>
+        internal int CurrentPairIndex
+        {
+            get
+            {
+                if (_currentPairIndex > ControllerGroups[CurrentGroupIndex].ControllerPairs.Count)
+                {
+                    _currentPairIndex = 0;
+                    updateControllerBorders();
+                }
+
+                return _currentPairIndex;
+            }
+            set
+            {
+                _currentPairIndex = value;
 
                 updateControllerBorders();
             }
@@ -137,9 +165,30 @@ namespace TTMulti
 
         internal enum ControllerMode
         {
-            Multi,
-            Mirror,
-            Individual
+            /// <summary>
+            /// Control all pairs of toons in the current group with separate left and right controls
+            /// </summary>
+            Group,
+
+            /// <summary>
+            /// Control both toons in the current pair with separate left and right controls
+            /// </summary>
+            Pair,
+
+            /// <summary>
+            /// Mirror all input to all groups of toons
+            /// </summary>
+            MirrorAll,
+
+            /// <summary>
+            /// Mirror all input to all pairs of the current group
+            /// </summary>
+            MirrorGroup,
+
+            /// <summary>
+            /// Mirror all input to one controller
+            /// </summary>
+            MirrorIndividual
         }
 
         /// <summary>
@@ -176,7 +225,7 @@ namespace TTMulti
             }
         }
 
-        ControllerMode currentMode = ControllerMode.Multi;
+        ControllerMode currentMode = ControllerMode.Group;
         internal ControllerMode CurrentMode
         {
             get { return currentMode; }
@@ -285,7 +334,7 @@ namespace TTMulti
         {
             if (isActive)
             {
-                if (CurrentMode == ControllerMode.Multi)
+                if (CurrentMode == ControllerMode.Group)
                 {
                     IEnumerable<ControllerGroup> affectedGroups = Properties.Settings.Default.controlAllGroupsAtOnce
                         ? (IEnumerable<ControllerGroup>)ControllerGroups : new[] { ControllerGroups[CurrentGroupIndex] };
@@ -311,7 +360,7 @@ namespace TTMulti
                         }
                     }
                 }
-                else if(CurrentMode == ControllerMode.Mirror)
+                else if(CurrentMode == ControllerMode.MirrorAll)
                 {
                     ControllerGroups.ForEach(g =>
                     {
@@ -324,7 +373,7 @@ namespace TTMulti
                         }
                     });
                 }
-                else if (CurrentMode == ControllerMode.Individual)
+                else if (CurrentMode == ControllerMode.MirrorIndividual)
                 {
                     foreach (var group in ControllerGroups)
                     {
@@ -391,13 +440,13 @@ namespace TTMulti
                 {
                     if (isActive)
                     {
-                        if (currentMode == ControllerMode.Multi)
+                        if (currentMode == ControllerMode.Group)
                         {
-                            CurrentMode = ControllerMode.Mirror;
+                            CurrentMode = ControllerMode.MirrorAll;
                         }
                         else
                         {
-                            CurrentMode = ControllerMode.Multi;
+                            CurrentMode = ControllerMode.Group;
                         }
                     }
                     else
@@ -417,7 +466,7 @@ namespace TTMulti
                     updateControllerBorders();
                 }
             }
-            else if (isKeyboardInput && currentMode == ControllerMode.Multi && keysPressed == (Keys)Properties.Settings.Default.controlAllGroupsKeyCode)
+            else if (isKeyboardInput && currentMode == ControllerMode.Group && keysPressed == (Keys)Properties.Settings.Default.controlAllGroupsKeyCode)
             {
                 if (msg == (uint)Win32.WM.KEYDOWN)
                 {
@@ -433,13 +482,13 @@ namespace TTMulti
                 {
                     if (isActive)
                     {
-                        if (currentMode == ControllerMode.Individual)
+                        if (currentMode == ControllerMode.MirrorIndividual)
                         {
                             CurrentInvididualControllerIndex = (CurrentInvididualControllerIndex + 1) % AllControllers.Count();
                         }
                         else if (AllControllersWithWindows.Count() > 0)
                         {
-                            CurrentMode = ControllerMode.Individual;
+                            CurrentMode = ControllerMode.MirrorIndividual;
                         }
                     }
 
@@ -451,7 +500,7 @@ namespace TTMulti
                 List<ToontownController> affectedControllers = new List<ToontownController>();
                 List<Keys> keysToPress = new List<Keys>();
 
-                if (currentMode == ControllerMode.Multi)
+                if (currentMode == ControllerMode.Group)
                 {
                     if (isKeyboardInput
                         && !Properties.Settings.Default.controlAllGroupsAtOnce
@@ -505,11 +554,15 @@ namespace TTMulti
                         }
                     }
                 }
-                else if (CurrentMode == ControllerMode.Mirror)
+                else if (CurrentMode == ControllerMode.MirrorGroup)
+                {
+                    affectedControllers.AddRange(ControllerGroups[CurrentGroupIndex].AllControllers);
+                }
+                else if (CurrentMode == ControllerMode.MirrorAll)
                 {
                     affectedControllers.AddRange(AllControllers);
                 }
-                else if (CurrentMode == ControllerMode.Individual)
+                else if (CurrentMode == ControllerMode.MirrorIndividual)
                 {
                     if (CurrentIndividualController != null)
                     {
@@ -517,7 +570,11 @@ namespace TTMulti
                     }
                 }
 
-                if (isKeyboardInput && (CurrentMode == ControllerMode.Mirror || CurrentMode == ControllerMode.Individual))
+                if (isKeyboardInput && (
+                        CurrentMode == ControllerMode.MirrorAll 
+                        || CurrentMode == ControllerMode.MirrorGroup 
+                        || CurrentMode == ControllerMode.MirrorIndividual
+                    ))
                 {
                     affectedControllers.ForEach(c => c.PostMessage(msg, wParam, lParam));
                 }

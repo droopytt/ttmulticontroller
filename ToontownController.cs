@@ -72,6 +72,8 @@ namespace TTMulti
             }
         }
 
+        public int PairNumber { get; set; }
+
         public int GroupNumber { get; }
 
         public bool ShowGroupNumber { get; set; } = false;
@@ -107,9 +109,10 @@ namespace TTMulti
 
         Thread bgThread;
         
-        public ToontownController(int groupNumber)
+        public ToontownController(int groupNumber, int pairNumber)
         {
             GroupNumber = groupNumber;
+            PairNumber = pairNumber;
 
             WindowWatcher.Instance.ActiveWindowChanged += WindowWatcher_ActiveWindowChanged;
             WindowWatcher.Instance.WindowClosed += WindowWatcher_WindowClosed;

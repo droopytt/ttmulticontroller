@@ -434,12 +434,12 @@ namespace TTMulti.Forms
 
         private void multiModeRadio_Click(object sender, EventArgs e)
         {
-            controller.CurrentMode = Multicontroller.ControllerMode.Multi;
+            controller.CurrentMode = Multicontroller.ControllerMode.Group;
         }
 
         private void mirrorModeRadio_Clicked(object sender, EventArgs e)
         {
-            controller.CurrentMode = Multicontroller.ControllerMode.Mirror;
+            controller.CurrentMode = Multicontroller.ControllerMode.MirrorAll;
         }
 
         private void MulticontrollerWnd_Activated(object sender, EventArgs e)
