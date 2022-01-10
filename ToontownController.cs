@@ -321,11 +321,11 @@ namespace TTMulti
         /// <summary>
         /// Post a message asynchronously to the Toontown window
         /// </summary>
-        public void PostMessage(uint msg, IntPtr wParam, IntPtr lParam)
+        public void PostMessage(Win32.WM msg, IntPtr wParam, IntPtr lParam)
         {
             if (WindowHandle != IntPtr.Zero)
             {
-                if (!Win32.PostMessage(WindowHandle, msg, wParam, lParam))
+                if (!Win32.PostMessage(WindowHandle, (uint)msg, wParam, lParam))
                 {
                     ErrorOccurredPostingMessage = true;
                 }
@@ -337,11 +337,11 @@ namespace TTMulti
         /// Returns immediately unlike SendMessage as long as the target window is in a different
         /// thread.
         /// </summary>
-        public void SendMessage(uint msg, IntPtr wParam, IntPtr lParam)
+        public void SendMessage(Win32.WM msg, IntPtr wParam, IntPtr lParam)
         {
             if (WindowHandle != IntPtr.Zero)
             {
-                Win32.SendNotifyMessage(WindowHandle, msg, wParam, lParam);
+                Win32.SendNotifyMessage(WindowHandle, (uint)msg, wParam, lParam);
             }
         }
 
