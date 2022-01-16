@@ -106,17 +106,6 @@ namespace TTMulti
                 {
                     return ControllerGroups.SelectMany(g => g.LeftControllers);
                 }
-                else if (CurrentMode == ControllerMode.Pair)
-                {
-                    if (CurrentControllerPair != null)
-                    {
-                        return new[] { CurrentControllerPair?.LeftController };
-                    } 
-                    else
-                    {
-                        return new ToontownController[] { };
-                    }
-                }
                 else
                 {
                     return ControllerGroups[CurrentGroupIndex].LeftControllers;
@@ -134,17 +123,6 @@ namespace TTMulti
                 if (CurrentMode == ControllerMode.AllGroup)
                 {
                     return ControllerGroups.SelectMany(g => g.RightControllers);
-                }
-                else if (CurrentMode == ControllerMode.Pair)
-                {
-                    if (CurrentControllerPair != null)
-                    {
-                        return new[] { CurrentControllerPair?.RightController };
-                    }
-                    else
-                    {
-                        return new ToontownController[] { };
-                    }
                 }
                 else
                 {
@@ -222,11 +200,6 @@ namespace TTMulti
             Group,
 
             /// <summary>
-            /// Control both toons in the current pair with separate left and right controls
-            /// </summary>
-            Pair,
-
-            /// <summary>
             /// Control all groups of toons with separate left and right controls
             /// </summary>
             AllGroup,
@@ -235,16 +208,6 @@ namespace TTMulti
             /// Mirror all input to all groups of toons
             /// </summary>
             MirrorAll,
-
-            /// <summary>
-            /// Mirror all input to all pairs of the current group
-            /// </summary>
-            MirrorGroup,
-
-            /// <summary>
-            /// Mirror all input to one controller
-            /// </summary>
-            MirrorIndividual
         }
 
         /// <summary>
@@ -420,12 +383,12 @@ namespace TTMulti
                     {
                         foreach (ToontownController controller in group.LeftControllers)
                         {
-                            controller.BorderColor = Color.LimeGreen;
+                            
+                            controller.BorderColor = Color.Cyan;
                         }
-
                         foreach (ToontownController controller in group.RightControllers)
                         {
-                            controller.BorderColor = Color.Blue;
+                            controller.BorderColor = Color.FromArgb(62, 113, 234);
                         }
 
                         foreach (ToontownController controller in group.AllControllers)
@@ -441,48 +404,6 @@ namespace TTMulti
                         controller.ShowBorder = false;
                     }
                 }
-                else if (CurrentMode == ControllerMode.Pair)
-                {
-                    foreach (ControllerPair pair in AllControllerPairs)
-                    {
-                        if (pair == CurrentControllerPair)
-                        {
-                            pair.LeftController.BorderColor = Color.LimeGreen;
-                            pair.RightController.BorderColor = Color.Red;
-
-                            foreach (ToontownController controller in pair.AllControllers)
-                            {
-                                controller.ShowGroupNumber = false;
-                                controller.CaptureMouseEvents = Properties.Settings.Default.replicateMouse;
-                                controller.ShowBorder = true;
-                            }
-                        }
-                        else
-                        {
-                            foreach (ToontownController controller in pair.AllControllers)
-                            {
-                                controller.ShowBorder = false;
-                            }
-                        }
-                    }
-                }
-                else if (CurrentMode == ControllerMode.MirrorGroup)
-                {
-                    ControllerGroup currentGroup = ControllerGroups[CurrentGroupIndex];
-
-                    foreach (ToontownController controller in currentGroup.AllControllers)
-                    {
-                        controller.BorderColor = Color.Violet;
-                        controller.ShowGroupNumber = ControllerGroups.Count > 1;
-                        controller.CaptureMouseEvents = Properties.Settings.Default.replicateMouse;
-                        controller.ShowBorder = true;
-                    }
-
-                    foreach (ToontownController controller in ControllerGroups.Except(new[] { currentGroup }).SelectMany(g => g.AllControllers))
-                    {
-                        controller.ShowBorder = false;
-                    }
-                }
                 else if (CurrentMode == ControllerMode.MirrorAll)
                 {
                     foreach (ToontownController controller in AllControllers)
@@ -491,16 +412,6 @@ namespace TTMulti
                         controller.ShowBorder = true;
                         controller.ShowGroupNumber = ControllerGroups.Count > 1;
                         controller.CaptureMouseEvents = Properties.Settings.Default.replicateMouse;
-                    }
-                }
-                else if (CurrentMode == ControllerMode.MirrorIndividual)
-                {
-                    foreach (ToontownController controller in AllControllers)
-                    {
-                        controller.BorderColor = Color.Turquoise;
-                        controller.ShowBorder = CurrentIndividualController == controller;
-                        controller.ShowGroupNumber = false;
-                        controller.CaptureMouseEvents = CurrentIndividualController == controller;
                     }
                 }
             } 
@@ -592,11 +503,6 @@ namespace TTMulti
                             availableModesToCycle.Add(ControllerMode.AllGroup);
                         }
 
-                        if (Properties.Settings.Default.mirrorGroupModeCycleWithModeHotkey)
-                        {
-                            availableModesToCycle.Add(ControllerMode.MirrorGroup);
-                        }
-
                         int currentModeIndex = availableModesToCycle.IndexOf(CurrentMode);
 
                         if (currentModeIndex >= 0)
@@ -637,24 +543,8 @@ namespace TTMulti
                     {
                         CurrentMode = ControllerMode.AllGroup;
                     }
-                }
-            }
-            else if (keysPressed == (Keys)Properties.Settings.Default.mirrorGroupModeKeyCode)
-            {
-                CurrentMode = ControllerMode.MirrorGroup;
-            }
-            else if (keysPressed == (Keys)Properties.Settings.Default.pairModeKeyCode)
-            {
-                if (msg == Win32.WM.KEYDOWN && isActive && AllControllerPairsWithWindows.Count() > 0)
-                {
-                    if (CurrentMode == ControllerMode.Pair)
-                    {
-                        CurrentPairIndex = (CurrentPairIndex + 1) % AllControllerPairsWithWindows.Count();
-                    }
-                    else
-                    {
-                        CurrentMode = ControllerMode.Pair;
-                    }
+                    GroupsChanged?.Invoke(this, EventArgs.Empty);
+                    updateControllerBorders();
                 }
             }
             else if (keysPressed == (Keys)Properties.Settings.Default.replicateMouseKeyCode)
@@ -666,24 +556,7 @@ namespace TTMulti
                     updateControllerBorders();
                 }
             }
-            else if (keysPressed == (Keys)Properties.Settings.Default.individualControlKeyCode)
-            {
-                if (msg == Win32.WM.KEYDOWN)
-                {
-                    if (isActive)
-                    {
-                        if (_currentMode == ControllerMode.MirrorIndividual)
-                        {
-                            CurrentInvididualControllerIndex = (CurrentInvididualControllerIndex + 1) % AllControllers.Count();
-                        }
-                        else if (AllControllersWithWindows.Count() > 0)
-                        {
-                            CurrentMode = ControllerMode.MirrorIndividual;
-                        }
-                    }
-                }
-            }
-            else if ((CurrentMode == ControllerMode.Group || CurrentMode == ControllerMode.MirrorGroup)
+            else if ((CurrentMode == ControllerMode.Group)
                 && ControllerGroups.Count > 1
                 && (keysPressed >= Keys.D0 && keysPressed <= Keys.D9
                     || keysPressed >= Keys.NumPad0 && keysPressed <= Keys.NumPad9))
@@ -726,7 +599,7 @@ namespace TTMulti
             {
                 List<ToontownController> affectedControllers = new List<ToontownController>();
                 
-                if (CurrentMode == ControllerMode.Group || CurrentMode == ControllerMode.AllGroup || CurrentMode == ControllerMode.Pair)
+                if (CurrentMode == ControllerMode.Group || CurrentMode == ControllerMode.AllGroup)
                 {
                     if (LeftControllers.Contains(sourceController))
                     {
@@ -738,20 +611,9 @@ namespace TTMulti
                         affectedControllers.AddRange(RightControllers);
                     }
                 }
-                else if (CurrentMode == ControllerMode.MirrorGroup)
-                {
-                    affectedControllers.AddRange(ControllerGroups[CurrentGroupIndex].AllControllers);
-                }
                 else if (CurrentMode == ControllerMode.MirrorAll)
                 {
                     affectedControllers.AddRange(AllControllers);
-                }
-                else if (CurrentMode == ControllerMode.MirrorIndividual)
-                {
-                    if (CurrentIndividualController != null)
-                    {
-                        affectedControllers.Add(CurrentIndividualController);
-                    }
                 }
 
                 bool forwardMove = false;
@@ -835,7 +697,7 @@ namespace TTMulti
                 List<ToontownController> affectedControllers = new List<ToontownController>();
                 List<Keys> keysToPress = new List<Keys>();
 
-                if (CurrentMode == ControllerMode.Group || CurrentMode == ControllerMode.AllGroup || CurrentMode == ControllerMode.Pair)
+                if (CurrentMode == ControllerMode.Group || CurrentMode == ControllerMode.AllGroup)
                 {
                     if (leftKeys.ContainsKey(keysPressed))
                     {
@@ -851,25 +713,12 @@ namespace TTMulti
                         keysToPress.AddRange(rightKeys[keysPressed]);
                     }
                 }
-                else if (CurrentMode == ControllerMode.MirrorGroup)
-                {
-                    affectedControllers.AddRange(ControllerGroups[CurrentGroupIndex].AllControllers);
-                }
                 else if (CurrentMode == ControllerMode.MirrorAll)
                 {
                     affectedControllers.AddRange(AllControllers);
                 }
-                else if (CurrentMode == ControllerMode.MirrorIndividual)
-                {
-                    if (CurrentIndividualController != null)
-                    {
-                        affectedControllers.Add(CurrentIndividualController);
-                    }
-                }
 
-                if (CurrentMode == ControllerMode.MirrorAll
-                    || CurrentMode == ControllerMode.MirrorGroup
-                    || CurrentMode == ControllerMode.MirrorIndividual)
+                if (CurrentMode == ControllerMode.MirrorAll)
                 {
                     affectedControllers.ForEach(c => c.PostMessage(msg, wParam, lParam));
                 }

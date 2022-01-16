@@ -386,6 +386,7 @@ namespace TTMulti.Forms
         {
             switch (controller.CurrentMode)
             {
+                case Multicontroller.ControllerMode.AllGroup:
                 case Multicontroller.ControllerMode.Group:
                     multiModeRadio.Checked = true;
                     break;
