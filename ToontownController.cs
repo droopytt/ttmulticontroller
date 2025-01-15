@@ -265,9 +265,9 @@ namespace TTMulti
                         && WindowHandle != IntPtr.Zero
                         && Properties.Settings.Default.keepAliveKeyCode != (int)Keys.None)
                         {
-                            PostMessage((uint)Win32.WM.KEYDOWN, (IntPtr)Properties.Settings.Default.keepAliveKeyCode, IntPtr.Zero);
+                            PostMessage(Win32.WM.KEYDOWN, (IntPtr)Properties.Settings.Default.keepAliveKeyCode, IntPtr.Zero);
                             Thread.Sleep(50);
-                            PostMessage((uint)Win32.WM.KEYUP, (IntPtr)Properties.Settings.Default.keepAliveKeyCode, IntPtr.Zero);
+                            PostMessage(Win32.WM.KEYUP, (IntPtr)Properties.Settings.Default.keepAliveKeyCode, IntPtr.Zero);
 
                             lastWake = DateTime.Now;
                         }

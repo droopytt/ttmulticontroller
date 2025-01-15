@@ -377,22 +377,21 @@ namespace TTMulti.Forms
 
         private void Controller_ModeChanged(object sender, EventArgs e)
         {
-            this.InvokeIfRequired(() =>
+            switch (controller.CurrentMode)
             {
-                switch (controller.CurrentMode)
-                {
-                    case Multicontroller.ControllerMode.Multi:
-                        multiModeRadio.Checked = true;
-                        break;
-                    case Multicontroller.ControllerMode.Mirror:
-                        mirrorModeRadio.Checked = true;
-                        break;
-                    case Multicontroller.ControllerMode.Individual:
-                        multiModeRadio.Checked = false;
-                        mirrorModeRadio.Checked = false;
-                        break;
-                }
-            });
+                case Multicontroller.ControllerMode.Group:
+                    multiModeRadio.Checked = true;
+                    break;
+                case Multicontroller.ControllerMode.MirrorAll:
+                    mirrorModeRadio.Checked = true;
+                    break;
+                default:
+                    multiModeRadio.Checked = false;
+                    mirrorModeRadio.Checked = false;
+                    break;
+            }
+
+            UpdateWindowStatus();
         }
 
         private void optionsBtn_Click(object sender, EventArgs e)

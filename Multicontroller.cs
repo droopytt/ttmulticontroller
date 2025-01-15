@@ -73,23 +73,23 @@ namespace TTMulti
             }
         }
 
-        int _currentIndividualControllerIndex = 0;
+        int currentIndividualControllerIndex = 0;
 
-        internal int CurrentIndividualControllerIndex
+        internal int CurrentInvididualControllerIndex
         {
             get
             {
-                if (AllControllersWithWindows.Count() > 0 && _currentIndividualControllerIndex >= AllControllersWithWindows.Count())
+                if (AllControllersWithWindows.Count() > 0 && currentIndividualControllerIndex >= AllControllersWithWindows.Count())
                 {
-                    _currentIndividualControllerIndex = 0;
+                    currentIndividualControllerIndex = 0;
                     updateControllerBorders();
                 }
 
-                return _currentIndividualControllerIndex;
+                return currentIndividualControllerIndex;
             }
             private set
             {
-                _currentIndividualControllerIndex = value;
+                currentIndividualControllerIndex = value;
 
                 updateControllerBorders();
             }
@@ -132,15 +132,15 @@ namespace TTMulti
         }
 
         /// <summary>
-        /// The current controller that is being controlled individually
+        /// The current controller that is being controlled individually (if any)
         /// </summary>
         internal ToontownController CurrentIndividualController
         {
             get
             {
-                if (CurrentIndividualControllerIndex < AllControllersWithWindows.Count())
+                if (AllControllersWithWindows.Count() > 0)
                 {
-                    return AllControllersWithWindows.ElementAt(CurrentIndividualControllerIndex);
+                    return AllControllersWithWindows.ElementAt(CurrentInvididualControllerIndex);
                 }
 
                 return null;
@@ -555,15 +555,18 @@ namespace TTMulti
             }
             else if (keysPressed == (Keys)Properties.Settings.Default.individualControlKeyCode)
             {
-                if (msg == Win32.WM.KEYDOWN && isActive && AllControllersWithWindows.Count() > 0)
+                if (msg == Win32.WM.KEYDOWN)
                 {
-                    if (CurrentMode == ControllerMode.MirrorIndividual)
+                    if (isActive)
                     {
-                        CurrentIndividualControllerIndex = (CurrentIndividualControllerIndex + 1) % AllControllersWithWindows.Count();
-                    }
-                    else
-                    {
-                        CurrentMode = ControllerMode.MirrorIndividual;
+                        if (_currentMode == ControllerMode.MirrorIndividual)
+                        {
+                            CurrentInvididualControllerIndex = (CurrentInvididualControllerIndex + 1) % AllControllers.Count();
+                        }
+                        else if (AllControllersWithWindows.Count() > 0)
+                        {
+                            CurrentMode = ControllerMode.MirrorIndividual;
+                        }
                     }
                 }
             }

@@ -103,7 +103,6 @@
     <Compile Include="ControllerGroup.cs" />
     <Compile Include="ControllerPair.cs" />
     <Compile Include="Events\WindowClosedEventArgs.cs" />
-    <Compile Include="Events\WindowShowStateChangedEventArgs.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
