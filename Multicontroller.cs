@@ -13,6 +13,8 @@ namespace TTMulti
     class Multicontroller
     {
         internal static readonly Multicontroller Instance = new Multicontroller();
+        private static readonly Color LeftControllerBorderColor = Color.Cyan;
+        private static readonly Color RightControllerBorderColor = Color.FromArgb(62, 113, 234);
 
         public event EventHandler ModeChanged;
         public event EventHandler GroupsChanged;
@@ -356,12 +358,12 @@ namespace TTMulti
             {
                 foreach (ToontownController controller in ControllerGroups.SelectMany(g => g.LeftControllers))
                 {
-                    controller.BorderColor = Color.LimeGreen;
+                    controller.BorderColor = LeftControllerBorderColor;
                 }
 
                 foreach (ToontownController controller in ControllerGroups.SelectMany(g => g.RightControllers))
                 {
-                    controller.BorderColor = Color.Green;
+                    controller.BorderColor = RightControllerBorderColor;
                 }
 
                 foreach (ToontownController controller in AllControllers)
@@ -384,11 +386,11 @@ namespace TTMulti
                         foreach (ToontownController controller in group.LeftControllers)
                         {
                             
-                            controller.BorderColor = Color.Cyan;
+                            controller.BorderColor = LeftControllerBorderColor;
                         }
                         foreach (ToontownController controller in group.RightControllers)
                         {
-                            controller.BorderColor = Color.FromArgb(62, 113, 234);
+                            controller.BorderColor = RightControllerBorderColor;
                         }
 
                         foreach (ToontownController controller in group.AllControllers)
@@ -479,7 +481,6 @@ namespace TTMulti
         /// <returns>True the input was handled as a meta input</returns>
         private bool ProcessMetaKeyboardInput(Win32.WM msg, Keys keysPressed)
         {
-            Console.WriteLine("Entering function");
             if (keysPressed == (Keys)Properties.Settings.Default.modeKeyCode)
             {
                 if (msg == Win32.WM.HOTKEY || msg == Win32.WM.KEYDOWN)
@@ -532,15 +533,15 @@ namespace TTMulti
             }
             else if (keysPressed == (Keys)Properties.Settings.Default.controlAllGroupsKeyCode)
             {
-                Console.WriteLine("currently selected " + CurrentMode);
                 if (msg == Win32.WM.KEYDOWN)
                 {
                     if (CurrentMode == ControllerMode.AllGroup)
                     {
-                        CurrentMode = ControllerMode.Group;
+                        CurrentMode = PreviousMode;
                     }
                     else
                     {
+                        PreviousMode = CurrentMode;
                         CurrentMode = ControllerMode.AllGroup;
                     }
                     GroupsChanged?.Invoke(this, EventArgs.Empty);
@@ -588,6 +589,7 @@ namespace TTMulti
 
             return true;
         }
+        public ControllerMode PreviousMode { get; set; }
 
         /// <summary>
         /// Process mouse input
