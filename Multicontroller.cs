@@ -425,7 +425,7 @@ namespace TTMulti
 
                         foreach (ToontownController controller in group.RightControllers)
                         {
-                            controller.BorderColor = Color.Green;
+                            controller.BorderColor = Color.Blue;
                         }
 
                         foreach (ToontownController controller in group.AllControllers)
@@ -448,7 +448,7 @@ namespace TTMulti
                         if (pair == CurrentControllerPair)
                         {
                             pair.LeftController.BorderColor = Color.LimeGreen;
-                            pair.RightController.BorderColor = Color.Green;
+                            pair.RightController.BorderColor = Color.Red;
 
                             foreach (ToontownController controller in pair.AllControllers)
                             {
@@ -568,6 +568,7 @@ namespace TTMulti
         /// <returns>True the input was handled as a meta input</returns>
         private bool ProcessMetaKeyboardInput(Win32.WM msg, Keys keysPressed)
         {
+            Console.WriteLine("Entering function");
             if (keysPressed == (Keys)Properties.Settings.Default.modeKeyCode)
             {
                 if (msg == Win32.WM.HOTKEY || msg == Win32.WM.KEYDOWN)
@@ -625,7 +626,18 @@ namespace TTMulti
             }
             else if (keysPressed == (Keys)Properties.Settings.Default.controlAllGroupsKeyCode)
             {
-                CurrentMode = ControllerMode.AllGroup;
+                Console.WriteLine("currently selected " + CurrentMode);
+                if (msg == Win32.WM.KEYDOWN)
+                {
+                    if (CurrentMode == ControllerMode.AllGroup)
+                    {
+                        CurrentMode = ControllerMode.Group;
+                    }
+                    else
+                    {
+                        CurrentMode = ControllerMode.AllGroup;
+                    }
+                }
             }
             else if (keysPressed == (Keys)Properties.Settings.Default.mirrorGroupModeKeyCode)
             {
@@ -651,15 +663,6 @@ namespace TTMulti
                 {
                     Properties.Settings.Default.replicateMouse = !Properties.Settings.Default.replicateMouse;
                     SettingChangedByHotkey?.Invoke(this, EventArgs.Empty);
-                    updateControllerBorders();
-                }
-            }
-            else if (keysPressed == (Keys)Properties.Settings.Default.controlAllGroupsKeyCode)
-            {
-                if (msg == Win32.WM.KEYDOWN && CurrentMode != ControllerMode.AllGroup)
-                {
-                    CurrentMode = ControllerMode.AllGroup;
-                    GroupsChanged?.Invoke(this, EventArgs.Empty);
                     updateControllerBorders();
                 }
             }
