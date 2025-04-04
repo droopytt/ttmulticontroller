@@ -255,6 +255,7 @@ namespace TTMulti
             {
                 if (_currentMode != value)
                 {
+                    PreviousMode = CurrentMode;
                     _currentMode = value;
                     ModeChanged?.Invoke(this, EventArgs.Empty);
                 }
@@ -541,7 +542,6 @@ namespace TTMulti
                     }
                     else
                     {
-                        PreviousMode = CurrentMode;
                         CurrentMode = ControllerMode.AllGroup;
                     }
                     GroupsChanged?.Invoke(this, EventArgs.Empty);

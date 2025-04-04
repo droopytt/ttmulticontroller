@@ -441,7 +441,10 @@ namespace TTMulti.Forms
 
         private void multiModeRadio_Click(object sender, EventArgs e)
         {
-            controller.CurrentMode = Multicontroller.ControllerMode.Group;
+            if (controller.CurrentMode == Multicontroller.ControllerMode.MirrorAll && controller.PreviousMode != Multicontroller.ControllerMode.MirrorAll)
+            {
+                controller.CurrentMode = controller.PreviousMode;
+            }
         }
 
         private void mirrorModeRadio_Clicked(object sender, EventArgs e)
