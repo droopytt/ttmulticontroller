@@ -32,7 +32,7 @@ namespace TTMulti.Controls
             }
         }
 
-        private Color selectedBorderColor = Color.LimeGreen;
+        private Color selectedBorderColor = Multicontroller.LeftControllerBorderColor;
         public Color SelectedBorderColor
         {
             get => selectedBorderColor;

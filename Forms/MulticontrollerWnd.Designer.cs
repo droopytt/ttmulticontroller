@@ -69,9 +69,9 @@
             // 
             this.multiModeRadio.Appearance = System.Windows.Forms.Appearance.Button;
             this.multiModeRadio.Checked = true;
-            this.multiModeRadio.FlatAppearance.BorderColor = System.Drawing.Color.LimeGreen;
+            this.multiModeRadio.FlatAppearance.BorderColor = Multicontroller.RightControllerBorderColor;
             this.multiModeRadio.FlatAppearance.BorderSize = 3;
-            this.multiModeRadio.FlatAppearance.CheckedBackColor = System.Drawing.Color.LimeGreen;
+            this.multiModeRadio.FlatAppearance.CheckedBackColor = Multicontroller.RightControllerBorderColor;
             this.multiModeRadio.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.multiModeRadio.Location = new System.Drawing.Point(0, 0);
             this.multiModeRadio.Margin = new System.Windows.Forms.Padding(4);
@@ -179,7 +179,7 @@
             this.rightToonCrosshair.Margin = new System.Windows.Forms.Padding(4);
             this.rightToonCrosshair.Name = "rightToonCrosshair";
             this.rightToonCrosshair.Padding = new System.Windows.Forms.Padding(2);
-            this.rightToonCrosshair.SelectedBorderColor = System.Drawing.Color.DarkGreen;
+            this.rightToonCrosshair.SelectedBorderColor = Multicontroller.RightControllerBorderColor;
             this.rightToonCrosshair.Size = new System.Drawing.Size(45, 45);
             this.rightToonCrosshair.TabIndex = 14;
             this.rightToonCrosshair.WindowSelected += new TTMulti.Controls.WindowSelectedHandler(this.rightToonCrosshair_WindowSelected);
@@ -191,7 +191,7 @@
             this.leftToonCrosshair.Margin = new System.Windows.Forms.Padding(4);
             this.leftToonCrosshair.Name = "leftToonCrosshair";
             this.leftToonCrosshair.Padding = new System.Windows.Forms.Padding(2);
-            this.leftToonCrosshair.SelectedBorderColor = System.Drawing.Color.LimeGreen;
+            this.leftToonCrosshair.SelectedBorderColor = Multicontroller.LeftControllerBorderColor;
             this.leftToonCrosshair.Size = new System.Drawing.Size(45, 45);
             this.leftToonCrosshair.TabIndex = 13;
             this.leftToonCrosshair.WindowSelected += new TTMulti.Controls.WindowSelectedHandler(this.leftToonCrosshair_WindowSelected);

@@ -13,8 +13,8 @@ namespace TTMulti
     class Multicontroller
     {
         internal static readonly Multicontroller Instance = new Multicontroller();
-        private static readonly Color LeftControllerBorderColor = Color.Cyan;
-        private static readonly Color RightControllerBorderColor = Color.FromArgb(62, 113, 234);
+        public static readonly Color LeftControllerBorderColor = Color.Cyan;
+        public static readonly Color RightControllerBorderColor = Color.FromArgb(62, 113, 234);
 
         public event EventHandler ModeChanged;
         public event EventHandler GroupsChanged;
