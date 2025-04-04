@@ -90,31 +90,42 @@ namespace TTMulti.Forms
                     int oldX = (int)Math.Ceiling((MousePosition.X - virtualScreen.Left) * 65536.0 / virtualScreen.Width),
                         oldY = (int)Math.Ceiling((MousePosition.Y - virtualScreen.Top) * 65536.0 / virtualScreen.Height);
 
-                    var pInputs = new[]{
-                        new Win32.INPUT() {
+                    var pInputs = new[]
+                    {
+                        new Win32.INPUT()
+                        {
                             type = 0, //mouse event
-                            U = new Win32.InputUnion() {
-                                mi = new Win32.MOUSEINPUT() {
+                            U = new Win32.InputUnion()
+                            {
+                                mi = new Win32.MOUSEINPUT()
+                                {
                                     dx = x,
                                     dy = y,
-                                    dwFlags = Win32.MOUSEEVENTF.ABSOLUTE | Win32.MOUSEEVENTF.VIRTUALDESK | Win32.MOUSEEVENTF.MOVE | Win32.MOUSEEVENTF.LEFTDOWN
+                                    dwFlags = Win32.MOUSEEVENTF.ABSOLUTE | Win32.MOUSEEVENTF.VIRTUALDESK | Win32.MOUSEEVENTF.MOVE |
+                                              Win32.MOUSEEVENTF.LEFTDOWN
                                 }
                             }
                         },
-                        new Win32.INPUT() {
+                        new Win32.INPUT()
+                        {
                             type = 0, //mouse event
-                            U = new Win32.InputUnion() {
-                                mi = new Win32.MOUSEINPUT() {
+                            U = new Win32.InputUnion()
+                            {
+                                mi = new Win32.MOUSEINPUT()
+                                {
                                     dx = 0,
                                     dy = 0,
                                     dwFlags = Win32.MOUSEEVENTF.LEFTUP
                                 }
                             }
                         },
-                        new Win32.INPUT() {
+                        new Win32.INPUT()
+                        {
                             type = 0, //mouse event
-                            U = new Win32.InputUnion() {
-                                mi = new Win32.MOUSEINPUT() {
+                            U = new Win32.InputUnion()
+                            {
+                                mi = new Win32.MOUSEINPUT()
+                                {
                                     dx = oldX,
                                     dy = oldY,
                                     dwFlags = Win32.MOUSEEVENTF.ABSOLUTE | Win32.MOUSEEVENTF.VIRTUALDESK | Win32.MOUSEEVENTF.MOVE
@@ -150,12 +161,13 @@ namespace TTMulti.Forms
             leftStatusLbl.Text = "Group " + (controller.CurrentGroupIndex + 1) + " active.";
             rightStatusLbl.Text = controller.ControllerGroups.Count + " groups.";
 
-            if (!statusStrip1.Visible && controller.ControllerGroups.Count > 1 && controller.CurrentMode != Multicontroller.ControllerMode.AllGroup)
+            bool allGroupsMode = Multicontroller.Instance.AllGroupsMode;
+            if (!statusStrip1.Visible && controller.ControllerGroups.Count > 1 && !allGroupsMode)
             {
                 statusStrip1.Visible = true;
                 this.Padding = new Padding(this.Padding.Left, this.Padding.Top, this.Padding.Right, this.Padding.Bottom + statusStrip1.Height);
             }
-            else if (statusStrip1.Visible && (controller.ControllerGroups.Count == 1 || controller.CurrentMode == Multicontroller.ControllerMode.AllGroup))
+            else if (statusStrip1.Visible && (controller.ControllerGroups.Count == 1 || allGroupsMode))
             {
                 this.Padding = new Padding(this.Padding.Left, this.Padding.Top, this.Padding.Right, this.Padding.Bottom - statusStrip1.Height);
                 statusStrip1.Visible = false;
@@ -182,6 +194,7 @@ namespace TTMulti.Forms
                 case Keys.Right:
                 case Keys.Alt:
                     return true;
+
                 default:
                     break;
             }
@@ -219,7 +232,7 @@ namespace TTMulti.Forms
                     ret = controller.ProcessInput(m.Msg, m.WParam, m.LParam);
                     break;
             }
-            
+
             CheckControllerErrors();
 
             return ret;
@@ -243,9 +256,9 @@ namespace TTMulti.Forms
                 userPromptedForAdminRights = true;
 
                 if (MessageBox.Show(
-                    "There was an error controlling a Toontown window. You may need to run the multicontroller as administrator.\n\nDo you want to re-launch as administrator?",
-                    "Error",
-                    MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        "There was an error controlling a Toontown window. You may need to run the multicontroller as administrator.\n\nDo you want to re-launch as administrator?",
+                        "Error",
+                        MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     Properties.Settings.Default.runAsAdministrator = true;
                     Properties.Settings.Default.Save();
@@ -267,7 +280,7 @@ namespace TTMulti.Forms
             Properties.Settings.Default.lastLocation = this.Location;
             Properties.Settings.Default.Save();
         }
-        
+
         private void ReloadOptions()
         {
             this.TopMost = Properties.Settings.Default.onTopWhenInactive;
@@ -306,11 +319,12 @@ namespace TTMulti.Forms
 
             // Removes the extra padding on the right side of the status strip.
             // Apparently this is "not relevant for this class" but still has an effect.
-            statusStrip1.Padding = new Padding(statusStrip1.Padding.Left, statusStrip1.Padding.Top, statusStrip1.Padding.Left, statusStrip1.Padding.Bottom);
+            statusStrip1.Padding = new Padding(statusStrip1.Padding.Left, statusStrip1.Padding.Top, statusStrip1.Padding.Left,
+                statusStrip1.Padding.Bottom);
 
             // Set up the IMessageFilter so we receive all messages for child controls
             Application.AddMessageFilter(this);
-            
+
             // Restore the saved position of the window, making sure that it's not offscreen
             if (Properties.Settings.Default.lastLocation != Point.Empty)
             {
@@ -349,7 +363,7 @@ namespace TTMulti.Forms
             {
                 this.InvokeIfRequired(() => UnregisterHotkey());
             }
-            catch { }
+            catch {}
         }
 
         private void Controller_TTWindowActivated(object sender, EventArgs e)
@@ -358,7 +372,7 @@ namespace TTMulti.Forms
             {
                 this.InvokeIfRequired(() => RegisterHotkey());
             }
-            catch { }
+            catch {}
         }
 
         private void MainWnd_FormClosing(object sender, FormClosingEventArgs e)
@@ -367,8 +381,8 @@ namespace TTMulti.Forms
             {
                 activationThread.Abort();
             }
-            catch { }
-            
+            catch {}
+
             SaveWindowPosition();
         }
 
@@ -386,13 +400,14 @@ namespace TTMulti.Forms
         {
             switch (controller.CurrentMode)
             {
-                case Multicontroller.ControllerMode.AllGroup:
                 case Multicontroller.ControllerMode.Group:
                     multiModeRadio.Checked = true;
                     break;
+
                 case Multicontroller.ControllerMode.MirrorAll:
                     mirrorModeRadio.Checked = true;
                     break;
+
                 default:
                     multiModeRadio.Checked = false;
                     mirrorModeRadio.Checked = false;
@@ -441,10 +456,8 @@ namespace TTMulti.Forms
 
         private void multiModeRadio_Click(object sender, EventArgs e)
         {
-            if (controller.CurrentMode == Multicontroller.ControllerMode.MirrorAll && controller.PreviousMode != Multicontroller.ControllerMode.MirrorAll)
-            {
-                controller.CurrentMode = controller.PreviousMode;
-            }
+            controller.CurrentMode = Multicontroller.ControllerMode.Group;
+
         }
 
         private void mirrorModeRadio_Clicked(object sender, EventArgs e)

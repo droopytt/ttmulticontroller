@@ -46,7 +46,6 @@ namespace TTMulti.Forms
             this.addBindingBtn = new System.Windows.Forms.Button();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.allGroupModeGroupBox = new System.Windows.Forms.GroupBox();
-            this.allGroupModeCycleToggleChk = new System.Windows.Forms.CheckBox();
             this.allGroupModeLabel = new System.Windows.Forms.Label();
             this.allGroupModeHotkeyPicker = new TTMulti.Controls.KeyPicker();
             this.label12 = new System.Windows.Forms.Label();
@@ -263,7 +262,6 @@ namespace TTMulti.Forms
             // 
             // allGroupModeGroupBox
             // 
-            this.allGroupModeGroupBox.Controls.Add(this.allGroupModeCycleToggleChk);
             this.allGroupModeGroupBox.Controls.Add(this.allGroupModeLabel);
             this.allGroupModeGroupBox.Controls.Add(this.allGroupModeHotkeyPicker);
             this.allGroupModeGroupBox.Controls.Add(this.label12);
@@ -276,19 +274,6 @@ namespace TTMulti.Forms
             this.allGroupModeGroupBox.TabIndex = 7;
             this.allGroupModeGroupBox.TabStop = false;
             this.allGroupModeGroupBox.Text = "All Groups Mode";
-            // 
-            // allGroupModeCycleToggleChk
-            // 
-            this.allGroupModeCycleToggleChk.AutoSize = true;
-            this.allGroupModeCycleToggleChk.Checked = global::TTMulti.Properties.Settings.Default.allGroupModeCycleWithModeHotkey;
-            this.allGroupModeCycleToggleChk.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::TTMulti.Properties.Settings.Default, "allGroupModeCycleWithModeHotkey", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.allGroupModeCycleToggleChk.Location = new System.Drawing.Point(386, 34);
-            this.allGroupModeCycleToggleChk.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.allGroupModeCycleToggleChk.Name = "allGroupModeCycleToggleChk";
-            this.allGroupModeCycleToggleChk.Size = new System.Drawing.Size(192, 17);
-            this.allGroupModeCycleToggleChk.TabIndex = 8;
-            this.allGroupModeCycleToggleChk.Text = "Toggle with Mode/Activate Hotkey";
-            this.allGroupModeCycleToggleChk.UseVisualStyleBackColor = true;
             // 
             // allGroupModeLabel
             // 
@@ -781,6 +766,5 @@ namespace TTMulti.Forms
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.CheckBox groupModeCycleToggleChk;
         private System.Windows.Forms.CheckBox mirrorModeCycleToggleChk;
-        private System.Windows.Forms.CheckBox allGroupModeCycleToggleChk;
     }
 }

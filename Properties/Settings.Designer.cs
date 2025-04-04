@@ -466,18 +466,6 @@ namespace TTMulti.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool allGroupModeCycleWithModeHotkey {
-            get {
-                return ((bool)(this["allGroupModeCycleWithModeHotkey"]));
-            }
-            set {
-                this["allGroupModeCycleWithModeHotkey"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int mirrorGroupModeKeyCode {
             get {
