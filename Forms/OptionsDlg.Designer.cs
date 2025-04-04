@@ -273,7 +273,7 @@ namespace TTMulti.Forms
             this.allGroupModeGroupBox.Size = new System.Drawing.Size(588, 56);
             this.allGroupModeGroupBox.TabIndex = 7;
             this.allGroupModeGroupBox.TabStop = false;
-            this.allGroupModeGroupBox.Text = "All Groups Mode";
+            this.allGroupModeGroupBox.Text = "All Groups Toggle";
             // 
             // allGroupModeLabel
             // 
@@ -283,7 +283,7 @@ namespace TTMulti.Forms
             this.allGroupModeLabel.Size = new System.Drawing.Size(373, 32);
             this.allGroupModeLabel.TabIndex = 5;
             this.allGroupModeLabel.Text = "Make every left toon move at once, and every right toon move at once in all group" +
-    "s at once.";
+    "s at once = while enabled";
             // 
             // allGroupModeHotkeyPicker
             // 
