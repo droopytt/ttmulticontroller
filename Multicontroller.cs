@@ -391,7 +391,7 @@ namespace TTMulti
                 {
                     foreach (ToontownController controller in AllControllers)
                     {
-                        controller.BorderColor = Color.Violet;
+                        controller.BorderColor = Color.FromArgb(193, 145, 255);
                         controller.ShowBorder = true;
                         controller.ShowGroupNumber = ControllerGroups.Count > 1;
                         controller.CaptureMouseEvents = Properties.Settings.Default.replicateMouse;
