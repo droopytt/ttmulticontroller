@@ -499,5 +499,17 @@ namespace TTMulti.Properties {
                 this["pairModeKeyCode"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int quadModeKeyCode {
+            get {
+                return ((int)(this["quadModeKeyCode"]));
+            }
+            set {
+                this["quadModeKeyCode"] = value;
+            }
+        }
     }
 }

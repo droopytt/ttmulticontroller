@@ -22,7 +22,16 @@ namespace TTMulti.Controls
         {
             ControllerGroup = controllerGroup;
 
-            groupBox.Text += (Multicontroller.Instance.ControllerGroups.IndexOf(controllerGroup) + 1);
+            int groupNumberInText = Multicontroller.Instance.ControllerGroups.IndexOf(controllerGroup) + 1;
+            if (groupNumberInText == 2)
+            {
+                groupNumberInText = 3;
+            }
+            else if (groupNumberInText == 3)
+            {
+                groupNumberInText = 2;
+            }
+            groupBox.Text += groupNumberInText;
 
             pairsLayoutPanel.Controls.Clear();
 

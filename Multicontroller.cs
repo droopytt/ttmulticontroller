@@ -191,6 +191,11 @@ namespace TTMulti
             /// Mirror all input to all groups of toons
             /// </summary>
             MirrorAll,
+            
+            /// <summary>
+            /// Mirror all input to all groups of toons
+            /// </summary>
+            Quad
         }
 
         /// <summary>

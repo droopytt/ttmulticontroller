@@ -229,5 +229,15 @@ namespace TTMulti.Forms
                 }
             }
         }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void keyPicker3_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
