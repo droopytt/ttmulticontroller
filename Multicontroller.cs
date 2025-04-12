@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Drawing;
-using System.Threading;
-using System.Diagnostics;
-using TTMulti.Forms;
+using System.Linq;
+using System.Windows.Forms;
+using TTMulti.Properties;
 
 namespace TTMulti
 {
@@ -301,7 +298,7 @@ namespace TTMulti
 
             UpdateOptions();
 
-            for (int i = ControllerGroups.Count; i < Properties.Settings.Default.numberOfGroups; i++)
+            for (int i = ControllerGroups.Count; i < Settings.Default.numberOfGroups; i++)
             {
                 AddControllerGroup();
             }
@@ -314,7 +311,7 @@ namespace TTMulti
             leftKeys.Clear();
             rightKeys.Clear();
 
-            var keyBindings = Properties.SerializedSettings.Default.Bindings;
+            var keyBindings = SerializedSettings.Default.Bindings;
 
             for (int i = 0; i < keyBindings.Count; i++)
             {
@@ -424,7 +421,7 @@ namespace TTMulti
                         {
                             controller.ShowBorder = true;
                             controller.ShowGroupNumber = ControllerGroups.Count > 1;
-                            controller.CaptureMouseEvents = Properties.Settings.Default.replicateMouse;
+                            controller.CaptureMouseEvents = Settings.Default.replicateMouse;
                         }
                     }
 
@@ -440,7 +437,7 @@ namespace TTMulti
                         controller.BorderColor = Color.Violet;
                         controller.ShowBorder = true;
                         controller.ShowGroupNumber = ControllerGroups.Count > 1;
-                        controller.CaptureMouseEvents = Properties.Settings.Default.replicateMouse;
+                        controller.CaptureMouseEvents = Settings.Default.replicateMouse;
                     }
                 }
             } 
@@ -508,7 +505,7 @@ namespace TTMulti
         /// <returns>True the input was handled as a meta input</returns>
         private bool ProcessMetaKeyboardInput(Win32.WM msg, Keys keysPressed)
         {
-            if (keysPressed == (Keys)Properties.Settings.Default.modeKeyCode)
+            if (keysPressed == (Keys)Settings.Default.modeKeyCode)
             {
                 if (msg == Win32.WM.HOTKEY || msg == Win32.WM.KEYDOWN)
                 {
@@ -516,12 +513,12 @@ namespace TTMulti
                     {
                         List<ControllerMode> availableModesToCycle = new List<ControllerMode>();
 
-                        if (Properties.Settings.Default.groupModeCycleWithModeHotkey)
+                        if (Settings.Default.groupModeCycleWithModeHotkey)
                         {
                             availableModesToCycle.Add(ControllerMode.Group);
                         }
 
-                        if (Properties.Settings.Default.mirrorModeCycleWithModeHotkey)
+                        if (Settings.Default.mirrorModeCycleWithModeHotkey)
                         {
                             availableModesToCycle.Add(ControllerMode.MirrorAll);
                         }
@@ -545,15 +542,15 @@ namespace TTMulti
                     }
                 }
             }
-            else if (keysPressed == (Keys)Properties.Settings.Default.groupModeKeyCode)
+            else if (keysPressed == (Keys)Settings.Default.groupModeKeyCode)
             {
                 CurrentMode = ControllerMode.Group;
             }
-            else if (keysPressed == (Keys)Properties.Settings.Default.mirrorModeKeyCode)
+            else if (keysPressed == (Keys)Settings.Default.mirrorModeKeyCode)
             {
                 CurrentMode = ControllerMode.MirrorAll;
             }
-            else if (keysPressed == (Keys)Properties.Settings.Default.controlAllGroupsKeyCode)
+            else if (keysPressed == (Keys)Settings.Default.controlAllGroupsKeyCode)
             {
                 
                 if (msg == Win32.WM.KEYDOWN)
@@ -574,7 +571,7 @@ namespace TTMulti
                     updateControllerBorders();
                 }
             }
-            else if (keysPressed == (Keys)Properties.Settings.Default.quadModeKeyCode)
+            else if (keysPressed == (Keys)Settings.Default.quadModeKeyCode)
             {
                 if (msg == Win32.WM.KEYDOWN)
                 {
@@ -594,11 +591,11 @@ namespace TTMulti
                     updateControllerBorders();
                 }
             }
-            else if (keysPressed == (Keys)Properties.Settings.Default.replicateMouseKeyCode)
+            else if (keysPressed == (Keys)Settings.Default.replicateMouseKeyCode)
             {
                 if (msg == Win32.WM.KEYDOWN)
                 {
-                    Properties.Settings.Default.replicateMouse = !Properties.Settings.Default.replicateMouse;
+                    Settings.Default.replicateMouse = !Settings.Default.replicateMouse;
                     SettingChangedByHotkey?.Invoke(this, EventArgs.Empty);
                     updateControllerBorders();
                 }
