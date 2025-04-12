@@ -573,7 +573,7 @@ namespace TTMulti
             }
             else if (keysPressed == (Keys)Settings.Default.quadModeKeyCode)
             {
-                if (msg == Win32.WM.KEYDOWN)
+                if (msg == Win32.WM.KEYDOWN && ControllerGroups.Count >= 3)
                 {
                     if (!QuadMode)
                     {
