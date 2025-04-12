@@ -77,7 +77,7 @@ namespace TTMulti.Forms
             this.label3 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.quadModeBox = new System.Windows.Forms.GroupBox();
             this.quadModeLabel = new System.Windows.Forms.Label();
             this.quadModeKeyPicker = new TTMulti.Controls.KeyPicker();
             this.label5 = new System.Windows.Forms.Label();
@@ -97,7 +97,7 @@ namespace TTMulti.Forms
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.quadModeBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // okBtn
@@ -369,7 +369,7 @@ namespace TTMulti.Forms
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.groupBox2);
+            this.tabPage1.Controls.Add(this.quadModeBox);
             this.tabPage1.Controls.Add(this.allGroupModeGroupBox);
             this.tabPage1.Controls.Add(this.mirrorModeGroupBox);
             this.tabPage1.Controls.Add(this.groupModeGroupBox);
@@ -668,17 +668,17 @@ namespace TTMulti.Forms
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.quadModeLabel);
-            this.groupBox2.Controls.Add(this.quadModeKeyPicker);
-            this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox2.Location = new System.Drawing.Point(2, 170);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(588, 55);
-            this.groupBox2.TabIndex = 6;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Quad Mode";
-            this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
+            this.quadModeBox.Controls.Add(this.quadModeLabel);
+            this.quadModeBox.Controls.Add(this.quadModeKeyPicker);
+            this.quadModeBox.Controls.Add(this.label5);
+            this.quadModeBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.quadModeBox.Location = new System.Drawing.Point(2, 170);
+            this.quadModeBox.Name = "quadModeBox";
+            this.quadModeBox.Size = new System.Drawing.Size(588, 55);
+            this.quadModeBox.TabIndex = 6;
+            this.quadModeBox.TabStop = false;
+            this.quadModeBox.Text = "Quad Mode";
+            this.quadModeBox.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
             // label1
             // 
@@ -687,7 +687,7 @@ namespace TTMulti.Forms
             this.quadModeLabel.Name = "quadModeLabel";
             this.quadModeLabel.Size = new System.Drawing.Size(373, 32);
             this.quadModeLabel.TabIndex = 8;
-            this.quadModeLabel.Text = "Left 2 groups on left bindings, right 2 groups on right bindings";
+            this.quadModeLabel.Text = "Left 2 groups on left bindings, right 2 groups on right bindings. Only works with >= 3 groups";
             // 
             // keyPicker3
             // 
@@ -756,8 +756,8 @@ namespace TTMulti.Forms
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.quadModeBox.ResumeLayout(false);
+            this.quadModeBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -809,7 +809,7 @@ namespace TTMulti.Forms
         private ControlsPicker controlsPicker;
         private System.Windows.Forms.Button addBindingBtn;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox quadModeBox;
         private System.Windows.Forms.Label quadModeLabel;
         private KeyPicker quadModeKeyPicker;
         private System.Windows.Forms.Label label5;
