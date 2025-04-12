@@ -15,6 +15,8 @@ namespace TTMulti
         internal static readonly Multicontroller Instance = new Multicontroller();
         public static readonly Color LeftControllerBorderColor = Color.Cyan;
         public static readonly Color RightControllerBorderColor = Color.FromArgb(62, 113, 234);
+        public static readonly Color QuadModeLeftBorderColor = Color.FromArgb(255, 154, 0);
+        public static readonly Color QuadModeRightBorderColor = Color.FromArgb(200, 0,0);
 
         public event EventHandler ModeChanged;
         public event EventHandler GroupsChanged;
@@ -108,6 +110,11 @@ namespace TTMulti
                 {
                     return ControllerGroups.SelectMany(g => g.LeftControllers);
                 }
+                else if (QuadMode)
+                {
+                    return ControllerGroups.Where(g => g.GroupNumber == 1 || g.GroupNumber == 2)
+                        .SelectMany(g => g.AllControllers);
+                }
                 else
                 {
                     return ControllerGroups[CurrentGroupIndex].LeftControllers;
@@ -125,6 +132,12 @@ namespace TTMulti
                 if (AllGroupsMode)
                 {
                     return ControllerGroups.SelectMany(g => g.RightControllers);
+                }
+                else if (QuadMode)
+                {
+                    return ControllerGroups.Where(g => g.GroupNumber == 3 || g.GroupNumber == 4)
+                        .SelectMany(g => g.AllControllers);
+
                 }
                 return ControllerGroups[CurrentGroupIndex].RightControllers;
             }
@@ -177,9 +190,39 @@ namespace TTMulti
                 return AllControllerPairs.Where(p => p.LeftController.HasWindow || p.RightController.HasWindow);
             }
         }
-        
-        public bool AllGroupsMode { get; set; }
-        
+
+        public bool AllGroupsMode
+        {
+            get
+            {
+                return _allGroupsMode;
+            }
+            set
+            {
+                _allGroupsMode = value;
+                if (_allGroupsMode)
+                {
+                    QuadMode = false;
+                }
+            }
+        }
+
+        public bool QuadMode
+        {
+            get
+            {
+                return _quadMode;
+            }
+            set
+            {
+                _quadMode = value;
+                if (_quadMode)
+                {
+                    AllGroupsMode = false;
+                }
+            }
+        }
+
         internal enum ControllerMode
         {
             /// <summary>
@@ -191,11 +234,6 @@ namespace TTMulti
             /// Mirror all input to all groups of toons
             /// </summary>
             MirrorAll,
-            
-            /// <summary>
-            /// Mirror all input to all groups of toons
-            /// </summary>
-            Quad
         }
 
         /// <summary>
@@ -255,6 +293,8 @@ namespace TTMulti
         int lastMoveX, lastMoveY;
 
         object windowActivationLock = new object();
+        private bool _quadMode;
+        private bool _allGroupsMode;
 
         internal Multicontroller()
         {
@@ -364,19 +404,20 @@ namespace TTMulti
             {
                 if (CurrentMode == ControllerMode.Group)
                 {
-                    IEnumerable<ControllerGroup> affectedGroups = AllGroupsMode 
+                    IEnumerable<ControllerGroup> affectedGroups = AllGroupsMode || QuadMode
                         ? (IEnumerable<ControllerGroup>)ControllerGroups : new[] { ControllerGroups[CurrentGroupIndex] };
 
                     foreach (ControllerGroup group in affectedGroups)
                     {
-                        foreach (ToontownController controller in group.LeftControllers)
+                        var groupLeftControllers = QuadMode ? LeftControllers : group.LeftControllers;
+                        foreach (ToontownController controller in groupLeftControllers)
                         {
-                            
-                            controller.BorderColor = LeftControllerBorderColor;
+                            controller.BorderColor = QuadMode ? QuadModeLeftBorderColor : LeftControllerBorderColor;
                         }
-                        foreach (ToontownController controller in group.RightControllers)
+                        var groupRightControllers = QuadMode ? RightControllers : group.RightControllers;
+                        foreach (ToontownController controller in groupRightControllers)
                         {
-                            controller.BorderColor = RightControllerBorderColor;
+                            controller.BorderColor = QuadMode ? QuadModeRightBorderColor : RightControllerBorderColor;
                         }
 
                         foreach (ToontownController controller in group.AllControllers)
@@ -524,6 +565,26 @@ namespace TTMulti
                     else
                     {
                         AllGroupsMode = false;
+                    }
+                    if (CurrentMode != ControllerMode.MirrorAll)
+                    {
+                        CurrentMode = ControllerMode.Group;
+                    }
+                    GroupsChanged?.Invoke(this, EventArgs.Empty);
+                    updateControllerBorders();
+                }
+            }
+            else if (keysPressed == (Keys)Properties.Settings.Default.quadModeKeyCode)
+            {
+                if (msg == Win32.WM.KEYDOWN)
+                {
+                    if (!QuadMode)
+                    {
+                        QuadMode = true;
+                    }
+                    else
+                    {
+                        QuadMode = false;
                     }
                     if (CurrentMode != ControllerMode.MirrorAll)
                     {
