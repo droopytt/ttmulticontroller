@@ -687,7 +687,7 @@ namespace TTMulti.Forms
             this.quadModeLabel.Name = "quadModeLabel";
             this.quadModeLabel.Size = new System.Drawing.Size(373, 32);
             this.quadModeLabel.TabIndex = 8;
-            this.quadModeLabel.Text = "Left 2 groups on left bindings, right 2 groups on right bindings. Only works with >= 3 groups";
+            this.quadModeLabel.Text = "First 2 groups on left bindings, next 2 groups on right bindings. Only works with >= 3 groups";
             // 
             // keyPicker3
             // 
