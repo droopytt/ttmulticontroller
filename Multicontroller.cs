@@ -642,23 +642,7 @@ namespace TTMulti
             if (isActive)
             {
                 List<ToontownController> affectedControllers = new List<ToontownController>();
-                
-                if (CurrentMode == ControllerMode.Group)
-                {
-                    if (LeftControllers.Contains(sourceController))
-                    {
-                        affectedControllers.AddRange(LeftControllers);
-                    }
-
-                    if (RightControllers.Contains(sourceController))
-                    {
-                        affectedControllers.AddRange(RightControllers);
-                    }
-                }
-                else if (CurrentMode == ControllerMode.MirrorAll)
-                {
-                    affectedControllers.AddRange(AllControllers);
-                }
+                affectedControllers.AddRange(AllControllers);
 
                 bool forwardMove = false;
 
@@ -681,13 +665,13 @@ namespace TTMulti
                         || ((int)wParam & Win32.MK_MBUTTON) == Win32.MK_MBUTTON
                         || ((int)wParam & Win32.MK_RBUTTON) == Win32.MK_RBUTTON;
 
-                    if (!buttonDown || xDelta > 10 || yDelta > 10)
+                    if (!buttonDown || xDelta > 1 || yDelta > 1)
                     {
                         lastMoveX = x;
                         lastMoveY = y;
                     }
 
-                    if (buttonDown && (xDelta > 10 || yDelta > 10))
+                    if (buttonDown && (xDelta > 1 || yDelta > 1))
                     {
                         forwardMove = true;
                     }
