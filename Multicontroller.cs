@@ -486,6 +486,10 @@ namespace TTMulti
                     break;
             }
 
+            if (isKeyboardInput && keysPressed == (Keys)Settings.Default.multiClickKeyCode)
+            {
+                return ProcessMouseInput(Win32.WM.LBUTTONDOWN, wParam, lParam, sourceController) && ProcessMouseInput(Win32.WM.LBUTTONUP, wParam, lParam, sourceController);
+            }
             if (isMouseInput)
             {
                 return ProcessMouseInput(msg, wParam, lParam, sourceController);
