@@ -567,8 +567,7 @@ namespace TTMulti
                     {
                         CurrentMode = ControllerMode.Group;
                     }
-                    GroupsChanged?.Invoke(this, EventArgs.Empty);
-                    updateControllerBorders();
+                    Refresh();
                 }
             }
             else if (keysPressed == (Keys)Settings.Default.quadModeKeyCode)
@@ -631,6 +630,12 @@ namespace TTMulti
             }
 
             return true;
+        }
+        public void Refresh()
+        {
+
+            GroupsChanged?.Invoke(this, EventArgs.Empty);
+            updateControllerBorders();
         }
 
         /// <summary>

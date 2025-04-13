@@ -75,39 +75,43 @@ namespace TTMulti
 
             if (context.Request.HttpMethod == "POST")
             {
-                if (path == "/controllers")
+                var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding);
+                string requestBody = reader.ReadToEnd();
+                if (path == "/assign")
                 {
-                    var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding);
-                    string requestBody = reader.ReadToEnd();
-                    
-                    var windowAssignRequest = JsonConvert.DeserializeObject<WindowAssignRequest>(requestBody);
-                    var matchingControllers = Multicontroller.Instance.AllControllerPairs.Select(pair =>
-                            GetControllersForDirection(pair, windowAssignRequest.Pair))
-                        .Where(controller => controller.GroupNumber == windowAssignRequest.GroupNumber);
-                    var targetController = matchingControllers.First();
-                    if (matchingControllers.Count() != 1)
+                    HandleAssign(context, requestBody);
+                }
+                
+                else if (path == "/mode")
+                {
+                    ModeChangeRequest modeChangeRequest = null;
+                    try
                     {
-                        context.Response.StatusCode = 422;
-                        string message = "Could not find controller in group " + windowAssignRequest.GroupNumber +
-                                         " on the " + windowAssignRequest.Pair;
-                        byte[] buffer = Encoding.UTF8.GetBytes(message);
-
-                        context.Response.ContentType = "application/json";
-                        context.Response.ContentLength64 = buffer.Length;
-                        context.Response.OutputStream.Write(buffer, 0, buffer.Length);
-                        context.Response.OutputStream.Close();
+                        modeChangeRequest = JsonConvert.DeserializeObject<ModeChangeRequest>(requestBody);
                     }
-                    else
+                    catch (Exception e)
                     {
-                        context.Response.StatusCode = 200;
-                        string message = JsonConvert.SerializeObject(targetController);
-                        byte[] buffer = Encoding.UTF8.GetBytes(message);
-                        targetController.WindowHandle = new IntPtr(windowAssignRequest.HWnd);
-                        context.Response.ContentType = "application/json";
-                        context.Response.ContentLength64 = buffer.Length;
-                        context.Response.OutputStream.Write(buffer, 0, buffer.Length);
-                        context.Response.OutputStream.Close();   
+                        ReturnError(context, "Could not parse provided mode");
                     }
+                    string substate = modeChangeRequest.Substate;
+                    if (modeChangeRequest.Mode == Multicontroller.ControllerMode.Group && !string.IsNullOrEmpty(substate))
+                    {
+                        switch (substate)
+                        {
+                            case "quad":
+                                Multicontroller.Instance.QuadMode = true;
+                                break;
+                            case "allgroups":
+                                Multicontroller.Instance.AllGroupsMode = true;
+                                break;
+                            default:
+                                ReturnError(context, "Could not parse substate " + substate);
+                                return;
+                        }
+                    }
+                    Multicontroller.Instance.CurrentMode = modeChangeRequest.Mode;
+                    Multicontroller.Instance.Refresh();
+                    AssignObjectToReturnContext(context, "Assigned mode " + modeChangeRequest.Mode + " with substate " + substate);
                 }
                 else
                 {
@@ -115,6 +119,48 @@ namespace TTMulti
                 }
             }
 
+            context.Response.OutputStream.Close();
+        }
+        private static void HandleAssign(HttpListenerContext context, string requestBody)
+        {
+
+            var windowAssignRequest = JsonConvert.DeserializeObject<WindowAssignRequest>(requestBody);
+            var matchingControllers = Multicontroller.Instance.AllControllerPairs.Select(pair =>
+                    GetControllersForDirection(pair, windowAssignRequest.Pair))
+                .Where(controller => controller.GroupNumber == windowAssignRequest.GroupNumber)
+                .Where(controller => controller.PairNumber == 1);
+            var targetController = matchingControllers.First();
+            if (matchingControllers.Count() != 1)
+            {
+                ReturnError(context, "Could not find controller in group " + windowAssignRequest.GroupNumber +
+                                     " on the " + windowAssignRequest.Pair);
+            }
+            else
+            {
+                targetController.WindowHandle = new IntPtr(windowAssignRequest.HWnd);
+                AssignObjectToReturnContext(context, targetController);
+            }
+        }
+        
+        private static void ReturnError(HttpListenerContext context, string errorMessage)
+        {
+
+            context.Response.StatusCode = 422;
+            byte[] buffer = Encoding.UTF8.GetBytes(errorMessage);
+
+            context.Response.ContentType = "application/json";
+            context.Response.ContentLength64 = buffer.Length;
+            context.Response.OutputStream.Write(buffer, 0, buffer.Length);
+            context.Response.OutputStream.Close();
+        }
+        private static void AssignObjectToReturnContext(HttpListenerContext context, Object obj)
+        {
+            context.Response.StatusCode = 200;
+            string message = JsonConvert.SerializeObject(obj);
+            byte[] buffer = Encoding.UTF8.GetBytes(message);
+            context.Response.ContentType = "application/json";
+            context.Response.ContentLength64 = buffer.Length;
+            context.Response.OutputStream.Write(buffer, 0, buffer.Length);
             context.Response.OutputStream.Close();
         }
 
@@ -150,6 +196,16 @@ namespace TTMulti
 
         [DllImport("user32.dll")]
         private static extern bool SetProcessDPIAware();
+    }
+    internal class ModeChangeRequest
+    {
+        public Multicontroller.ControllerMode Mode { get; }
+        public string Substate { get; }
+        public ModeChangeRequest(Multicontroller.ControllerMode mode, String substate)
+        {
+            Mode = mode;
+            Substate = substate;
+        }
     }
 
     internal class WindowAssignRequest
