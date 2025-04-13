@@ -172,6 +172,12 @@ namespace TTMulti.Forms
                 this.Padding = new Padding(this.Padding.Left, this.Padding.Top, this.Padding.Right, this.Padding.Bottom - statusStrip1.Height);
                 statusStrip1.Visible = false;
             }
+
+            if (controller.QuadMode)
+            {
+                leftStatusLbl.Text = "Quad Mode Active";
+                rightStatusLbl.Text = "";
+            }
         }
 
         /// <summary>

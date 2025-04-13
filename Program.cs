@@ -1,15 +1,17 @@
 ﻿#define ENABLEMACRO
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
 using System.Diagnostics;
-using System.Threading;
+using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Newtonsoft.Json;
+
 using TTMulti.Forms;
-using TTMulti.Controls;
-using System.Xml.Serialization;
-using System.IO;
+using TTMulti.Properties;
 
 namespace TTMulti
 {
@@ -27,14 +29,14 @@ namespace TTMulti
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            if (Properties.Settings.Default.UpgradeRequired)
+            if (Settings.Default.UpgradeRequired)
             {
-                Properties.Settings.Default.Upgrade();
-                Properties.Settings.Default.UpgradeRequired = false;
-                Properties.Settings.Default.Save();
+                Settings.Default.Upgrade();
+                Settings.Default.UpgradeRequired = false;
+                Settings.Default.Save();
             }
 
-            if (Properties.Settings.Default.runAsAdministrator)
+            if (Settings.Default.runAsAdministrator)
             {
                 if (args.Length == 0 || args[0] != "--runasadmin")
                 {
@@ -45,12 +47,51 @@ namespace TTMulti
                 }
             }
 
+            StartLocalHttpServer();
             Application.Run(new MulticontrollerWnd());
+        }
+        private static void StartLocalHttpServer()
+        {
+            Task.Run(() =>
+            {
+                var listener = new HttpListener();
+                listener.Prefixes.Add("http://127.0.0.1:12525/");
+                listener.Start();
+                Console.WriteLine("Server running at http://127.0.0.1:12525/");
+
+                while (true)
+                {
+                    var context = listener.GetContext(); 
+                    Task.Run(() => HandleRequest(context)); 
+                }
+            });
+        }
+        
+        private static void HandleRequest(HttpListenerContext context)
+        {
+            string path = context.Request.Url.AbsolutePath;
+
+            if (path == "/controllers")
+            {
+                string json = JsonConvert.SerializeObject(Multicontroller.Instance.AllControllers);
+                byte[] buffer = Encoding.UTF8.GetBytes(json);
+
+                context.Response.ContentType = "application/json";
+                context.Response.ContentLength64 = buffer.Length;
+                context.Response.OutputStream.Write(buffer, 0, buffer.Length);
+                context.Response.OutputStream.Close();
+            }
+            else
+            {
+                context.Response.StatusCode = 404;
+            }
+
+            context.Response.OutputStream.Close();
         }
 
         internal static bool TryRunAsAdmin()
         {
-            ProcessStartInfo processInfo = new ProcessStartInfo(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+            ProcessStartInfo processInfo = new ProcessStartInfo(Assembly.GetExecutingAssembly().CodeBase);
             processInfo.Arguments = "--runasadmin";
             processInfo.UseShellExecute = true;
             processInfo.Verb = "runas";
@@ -62,13 +103,13 @@ namespace TTMulti
             }
             catch
             {
-                Properties.Settings.Default.runAsAdministrator = false;
-                Properties.Settings.Default.Save();
+                Settings.Default.runAsAdministrator = false;
+                Settings.Default.Save();
                 return false;
             }
         }
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         private static extern bool SetProcessDPIAware();
     }
 }
