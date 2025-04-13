@@ -101,8 +101,14 @@ namespace TTMulti
                 if (path == "/assign")
                 {
                     HandleAssign(context, requestBody);
+                } 
+                else if (path == "unassign")
+                {
+                    foreach (var instanceAllController in Multicontroller.Instance.AllControllers)
+                    {
+                        instanceAllController.WindowHandle = IntPtr.Zero;
+                    }
                 }
-                
                 else if (path == "/mode")
                 {
                     ModeChangeRequest modeChangeRequest = null;
