@@ -19,6 +19,7 @@ namespace TTMulti
 {
     static class Program
     {
+        private const string URI = "http://127.0.0.1:12525/";
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -57,9 +58,9 @@ namespace TTMulti
             Task.Run(() =>
             {
                 var listener = new HttpListener();
-                listener.Prefixes.Add("http://127.0.0.1:12525/");
+                listener.Prefixes.Add(URI);
                 listener.Start();
-                Console.WriteLine("Server running at http://127.0.0.1:12525/");
+                Console.WriteLine("Server running at " + URI);
 
                 while (true)
                 {
