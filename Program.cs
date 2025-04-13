@@ -8,10 +8,10 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-
 using TTMulti.Forms;
 using TTMulti.Properties;
 
@@ -72,11 +72,10 @@ namespace TTMulti
                 return false;
             }
         }
-        
+
         private static void StartLocalHttpServer()
         {
-            Task.Run(() =>
-            {
+            Task.Run(() => {
                 var listener = new HttpListener();
                 listener.Prefixes.Add(URI);
                 listener.Start();
@@ -84,8 +83,9 @@ namespace TTMulti
 
                 while (true)
                 {
-                    var context = listener.GetContext(); 
-                    Task.Run(() => HandleRequest(context)); 
+                    Thread.Sleep(5);
+                    var context = listener.GetContext();
+                    Task.Run(() => HandleRequest(context));
                 }
             });
         }
@@ -101,7 +101,7 @@ namespace TTMulti
                 if (path == "/assign")
                 {
                     HandleAssign(context, requestBody);
-                } 
+                }
                 else if (path == "/unassign")
                 {
                     foreach (var instanceAllController in Multicontroller.Instance.AllControllers)
@@ -121,20 +121,23 @@ namespace TTMulti
                         ReturnError(context, "Could not parse provided mode");
                     }
                     string substate = modeChangeRequest.Substate;
-                    if (modeChangeRequest.Mode == Multicontroller.ControllerMode.Group && !string.IsNullOrEmpty(substate))
+                    switch (substate)
                     {
-                        switch (substate)
-                        {
-                            case "quad":
-                                Multicontroller.Instance.QuadMode = true;
-                                break;
-                            case "allgroups":
-                                Multicontroller.Instance.AllGroupsMode = true;
-                                break;
-                            default:
-                                ReturnError(context, "Could not parse substate " + substate);
-                                return;
-                        }
+                        case "quad":
+                            Multicontroller.Instance.QuadMode = true;
+                            break;
+
+                        case "allgroups":
+                            Multicontroller.Instance.AllGroupsMode = true;
+                            break;
+                        
+                        case "reset":
+                            Multicontroller.Instance.AllGroupsMode = false;
+                            Multicontroller.Instance.QuadMode = false;
+                            break;
+                        default:
+                            ReturnError(context, "Could not parse substate " + substate);
+                            return;
                     }
                     Multicontroller.Instance.CurrentMode = modeChangeRequest.Mode;
                     Multicontroller.Instance.Refresh();
