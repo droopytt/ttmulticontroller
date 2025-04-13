@@ -511,17 +511,5 @@ namespace TTMulti.Properties {
                 this["quadModeKeyCode"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int multiClickKeyCode {
-            get {
-                return ((int)(this["multiClickKeyCode"]));
-            }
-            set {
-                this["multiClickKeyCode"] = value;
-            }
-        }
     }
 }
