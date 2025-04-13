@@ -92,12 +92,17 @@ namespace TTMulti.Controls
 
                 SelectedWindowHandle = hWnd;
 
-                var evt = WindowSelected;
+                AssignToProcess(hWnd);
+            }
+        }
 
-                if (evt != null)
-                {
-                    evt(this, hWnd);
-                }
+        public void AssignToProcess(IntPtr hWnd)
+        {
+            var evt = WindowSelected;
+
+            if (evt != null)
+            {
+                evt(this, hWnd);
             }
         }
     }
