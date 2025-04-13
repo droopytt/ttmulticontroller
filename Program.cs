@@ -83,7 +83,6 @@ namespace TTMulti
 
                 while (true)
                 {
-                    Thread.Sleep(5);
                     var context = listener.GetContext();
                     Task.Run(() => HandleRequest(context));
                 }
