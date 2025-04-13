@@ -102,7 +102,7 @@ namespace TTMulti
                 {
                     HandleAssign(context, requestBody);
                 } 
-                else if (path == "unassign")
+                else if (path == "/unassign")
                 {
                     foreach (var instanceAllController in Multicontroller.Instance.AllControllers)
                     {
