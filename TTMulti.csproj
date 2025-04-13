@@ -106,11 +106,14 @@
     <Compile Include="ControllerGroup.cs" />
     <Compile Include="ControllerPair.cs" />
     <Compile Include="Events\WindowClosedEventArgs.cs" />
+    <Compile Include="ModeChangeRequest.cs" />
+    <Compile Include="PairDirection.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="WindowAssignRequest.cs" />
     <Compile Include="WindowWatcher.cs" />
     <Compile Include="Controls\ControlsPicker.cs">
       <SubType>UserControl</SubType>

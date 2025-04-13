@@ -53,6 +53,26 @@ namespace TTMulti
             StartLocalHttpServer();
             Application.Run(new MulticontrollerWnd());
         }
+        internal static bool TryRunAsAdmin()
+        {
+            ProcessStartInfo processInfo = new ProcessStartInfo(Assembly.GetExecutingAssembly().CodeBase);
+            processInfo.Arguments = "--runasadmin";
+            processInfo.UseShellExecute = true;
+            processInfo.Verb = "runas";
+
+            try
+            {
+                Process.Start(processInfo);
+                return true;
+            }
+            catch
+            {
+                Settings.Default.runAsAdministrator = false;
+                Settings.Default.Save();
+                return false;
+            }
+        }
+        
         private static void StartLocalHttpServer()
         {
             Task.Run(() =>
@@ -69,7 +89,7 @@ namespace TTMulti
                 }
             });
         }
-        
+
         private static void HandleRequest(HttpListenerContext context)
         {
             string path = context.Request.Url.AbsolutePath;
@@ -142,7 +162,7 @@ namespace TTMulti
                 AssignObjectToReturnContext(context, targetController);
             }
         }
-        
+
         private static void ReturnError(HttpListenerContext context, string errorMessage)
         {
 
@@ -175,57 +195,9 @@ namespace TTMulti
             return controllerPair.RightController;
         }
 
-        internal static bool TryRunAsAdmin()
-        {
-            ProcessStartInfo processInfo = new ProcessStartInfo(Assembly.GetExecutingAssembly().CodeBase);
-            processInfo.Arguments = "--runasadmin";
-            processInfo.UseShellExecute = true;
-            processInfo.Verb = "runas";
-
-            try
-            {
-                Process.Start(processInfo);
-                return true;
-            }
-            catch
-            {
-                Settings.Default.runAsAdministrator = false;
-                Settings.Default.Save();
-                return false;
-            }
-        }
 
         [DllImport("user32.dll")]
         private static extern bool SetProcessDPIAware();
     }
-    internal class ModeChangeRequest
-    {
-        public Multicontroller.ControllerMode Mode { get; }
-        public string Substate { get; }
-        public ModeChangeRequest(Multicontroller.ControllerMode mode, String substate)
-        {
-            Mode = mode;
-            Substate = substate;
-        }
-    }
 
-    internal class WindowAssignRequest
-    {
-        public int GroupNumber { get; }
-        public int HWnd { get; }
-        public PairDirection Pair { get; }
-
-        public WindowAssignRequest(int groupNumber, int hWnd, PairDirection pair)
-        {
-            GroupNumber = groupNumber;
-            HWnd = hWnd;
-            Pair = pair;
-        }
-    }
-
-    internal enum PairDirection
-    {
-        Left,
-        Right
-    }
 }
