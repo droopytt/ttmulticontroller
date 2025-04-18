@@ -37,9 +37,7 @@ namespace TTMulti
             {
                 if (_windowHandle != value)
                 {
-                    Console.WriteLine(value);
                     _windowHandle = value;
-
                     WindowWatcher.Instance.WatchWindow(_windowHandle);
                 }
             }

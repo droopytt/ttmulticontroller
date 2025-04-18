@@ -1,6 +1,7 @@
 ﻿#define ENABLEMACRO
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -152,22 +153,33 @@ namespace TTMulti
         }
         private static void HandleAssign(HttpListenerContext context, string requestBody)
         {
-
-            var windowAssignRequest = JsonConvert.DeserializeObject<WindowAssignRequest>(requestBody);
-            var matchingControllers = Multicontroller.Instance.AllControllerPairs.Select(pair =>
-                    GetControllersForDirection(pair, windowAssignRequest.Pair))
-                .Where(controller => controller.GroupNumber == windowAssignRequest.GroupNumber)
-                .Where(controller => controller.PairNumber == 1);
-            var targetController = matchingControllers.First();
-            if (matchingControllers.Count() != 1)
+            var windowAssignRequests = JsonConvert.DeserializeObject<List<WindowAssignRequest>>(requestBody);
+            var controllers = new List<ToontownController>();
+            foreach (var windowAssignRequest in windowAssignRequests)
             {
-                ReturnError(context, "Could not find controller in group " + windowAssignRequest.GroupNumber +
-                                     " on the " + windowAssignRequest.Pair);
+                var matchingControllers = Multicontroller.Instance.AllControllerPairs.Select(pair =>
+                        GetControllersForDirection(pair, windowAssignRequest.Pair))
+                    .Where(controller => controller.GroupNumber == windowAssignRequest.GroupNumber)
+                    .Where(controller => controller.PairNumber == 1);
+                var targetController = matchingControllers.First();
+                if (matchingControllers.Count() != 1)
+                {
+                    Console.WriteLine("Couldnt find matching controller for request " + windowAssignRequest);
+                }
+                else
+                {
+                    Console.WriteLine("Found matching controller for request " + windowAssignRequest);
+                    targetController.WindowHandle = new IntPtr(windowAssignRequest.HWnd);
+                    controllers.Add(targetController);
+                }
+            }
+            if (controllers.Count != windowAssignRequests.Count)
+            {
+                ReturnError(context, "Could not match all controllers");
             }
             else
             {
-                targetController.WindowHandle = new IntPtr(windowAssignRequest.HWnd);
-                AssignObjectToReturnContext(context, targetController);
+                AssignObjectToReturnContext(context, controllers);   
             }
         }
 
